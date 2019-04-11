@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h1></h1>
+  <!-- CHAT WINDOW FORM -->
+  <div style='margin:auto; width:90%'>
+        <form id='form_chat' action='#' method="post">
+            {{ chat_form.csrf_token }}
+            {{ channel }} {{ chat_form.chat_message_data.label }}:<br>
+            {{ chat_form.chat_message_data(style='width:100%; height:9vh;') }}
+            {{ chat_form.chat_send(style='width:15%') }}
+        </form>
+  </div>
+  <br>
+
+  <!-- CHAT LOG WINDOW -->
+  <div id='chat-log-window' style='margin: auto; width:90%; height:30vh; overflow-y:scroll; background-color:lightgray'>
+      {# Populate the history to the chat log window #}
+      <div>
+         {% for msg in chat_log %}
+             ( {{ msg.tstamp }} ) {{ msg.nickname }} : {{ msg.data }} <br> 
+         {% endfor %}
+      </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script charset="UTF-8">
+    $(document).ready(function() {
+        // An application can open a connection on multiple namespaces, and
+        // Socket.IO will multiplex all those connections on a single
+        // physical channel. If you don't care about multiple channels, you
+        // can set the namespace to an empty string.
+        namespace = '/chat';
+
+        // Connect to the Socket.IO server.
+        // The connection URL has the following format:
+        //     http[s]://<domain>:<port>[/<namespace>]
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+        // Handlers for the chat submit form
+        // For submit form, emit event, with message text.
+           $('form#form_chat').submit(function(event) {
+               // Send Event
+               socket.emit('send_chat_message', {target: '{{ channel }}', message: $('#chat_message_data').val(), nickname: '{{ nickname }}' } );
+
+               // Clear the Input Form
+               document.getElementById('form_chat').reset();
+
+               return false;
+           });
+
+        // Event handler for Chat Log History
+        socket.on('recv_chat_message', function(msg) {
+            // Update the chat log window
+
+            // Prepend to the chat log window
+            $('#chat-log-window').prepend($('<div/>').text('( ' + msg.tstamp + ' ) ' + msg.nickname + ' : ' + msg.data).html() + '<br>');
+        });
+
+      });
+    </script>
+  </body>
+</html>

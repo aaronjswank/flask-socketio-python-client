@@ -1,0 +1,9 @@
+flask
+flask-socketio
+flask-wtf
+eventlet
+# note: socketio also included in flask-socketio
+#socketio
+requests
+aiohttp
+websockets
