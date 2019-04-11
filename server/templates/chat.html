@@ -52,6 +52,16 @@
                return false;
            });
 
+        // Bind the Enter/Return key to the submit
+        //Ref: https://www.w3schools.com/howto/howto_js_trigger_button_enter.asp
+        var chat_msg_data = document.getElementById('chat_message_data');
+        chat_msg_data.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("chat_send").click();
+          }
+        });
+
         // Event handler for Chat Log History
         socket.on('recv_chat_message', function(msg) {
             // Update the chat log window
