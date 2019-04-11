@@ -20,13 +20,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
 sio = SocketIO(app, async_mode=async_mode)
 
-# For IRC Messages
+# For Chat Messages
 CHANNEL = '#test-channel'
-
-# Keep a message counter number
-# Store for each channel
-MSG_COUNT = dict()
-MSG_COUNT[CHANNEL] = dict()
 
 # Store chat log history
 # used to populate the chat html page on reload
@@ -54,20 +49,8 @@ class TheChatForm(FlaskForm):
 # ----------------------------------------------------------
 
 
-# IRC Chat Callbacks
+# Chat Callbacks
 # ..................
-def get_chat_send_message_count(target, nickname):
-    ''' Keep track of the send message count for nickname '''
-
-    # Increment the message count
-    if nickname not in MSG_COUNT[target].keys():
-       MSG_COUNT[target][nickname] = 1;
-    else :
-       MSG_COUNT[target][nickname] += 1;
-
-    return MSG_COUNT[target][nickname]
-
-
 def record_chat_send_message(message):
     ''' Record message for chat log history html view
         The message should be a dictionary with keys:
@@ -130,6 +113,6 @@ def html_chat():
 if __name__ == '__main__':
 
     # Run the FLASK-SOCKETIO APP
-    sio.run(app, debug=True)
+    #sio.run(app, debug=True)
     # For binding on all interfaces
-    #sio.run(app, host='0.0.0.0', debug=True)
+    sio.run(app, host='0.0.0.0', debug=True)
