@@ -12,13 +12,13 @@ from flask_socketio import socketio
 LOOP = asyncio.get_event_loop()
 
 # SocketIO Client
-sio = socketio.AsyncClient()
+sio = socketio.AsyncClient(logger=True, engineio_logger=True)
 
 # ----------------------------------------------------- 
 # Socketio
 # ----------------------------------------------------- 
 
-@sio.on('send_chat_message', namespace='/chat')
+@sio.on('send_message', namespace='/chat')
 def on_send_chat_message(message):
     ''' Callback action for sending a chat message from socketio '''
     print(message)

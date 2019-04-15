@@ -18,7 +18,7 @@ async_mode = 'eventlet'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
-sio = SocketIO(app, async_mode=async_mode)
+sio = SocketIO(app, async_mode=async_mode, logger=True, engineio_logger=True)
 
 # For Chat Messages
 CHANNEL = '#test-channel'
@@ -62,7 +62,7 @@ def record_chat_send_message(message):
     CHAT_LOG[message['target']].insert(0, dict(message))
 
 
-@sio.on('send_chat_message', namespace='/chat')
+@sio.on('send_c_message', namespace='/chat')
 def on_send_chat_message(message):
     ''' Received a send chat message from web client, forward to Python Client '''
 
@@ -70,7 +70,7 @@ def on_send_chat_message(message):
     message['message'] = message['message'].strip()
 
     # relay message to irc bot client
-    sio.emit('send_chat_message', message, namespace='/chat')
+    sio.emit('send_message', message, namespace='/chat')
 
     # DEBUG Send message to all connected web clients
     tstamp = datetime.datetime.utcnow().strftime("%H:%M:%S")
@@ -78,16 +78,16 @@ def on_send_chat_message(message):
            'target': message['target'],
            'nickname': message['nickname'],
            'tstamp': tstamp }
-    sio.emit('recv_chat_message', msg, namespace='/chat')
+    sio.emit('recv_c_message', msg, namespace='/chat')
 
     # record the message to the chat log
     record_chat_send_message(msg)
 
 
-@sio.on('recv_chat_message', namespace='/chat')
+@sio.on('recv_message', namespace='/chat')
 def on_recv_chat_message(message):
     ''' Received a message from Python Client, forward to web client '''
-    sio.emit('recv_chat_message', message, namespace='/chat')
+    sio.emit('recv_c_message', message, namespace='/chat')
 
 
 # ----------------------------------------------------------

@@ -44,7 +44,7 @@
         // For submit form, emit event, with message text.
            $('form#form_chat').submit(function(event) {
                // Send Event
-               socket.emit('send_chat_message', {target: '{{ channel }}', message: $('#chat_message_data').val(), nickname: '{{ nickname }}' } );
+               socket.emit('send_c_message', {target: '{{ channel }}', message: $('#chat_message_data').val(), nickname: '{{ nickname }}' } );
 
                // Clear the Input Form
                document.getElementById('form_chat').reset();
